@@ -95,6 +95,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
         if (mLocationPermissionsGranted){
             getDeviceLocation();
 
+            //GPS checker
+            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                Toast.makeText(MapActivity.this, "GPS is Enabled in your devide", Toast.LENGTH_SHORT).show();
+            } else {
+                showGPSDisabledAlertToUser();
+            }
+
             map.setMyLocationEnabled(true);
             map.getUiSettings().setMyLocationButtonEnabled(true);
             map.getUiSettings().setCompassEnabled(true);
@@ -215,6 +223,31 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback{
                 }
             }
         }
+    }
+
+
+    // gps dialog box
+    private void showGPSDisabledAlertToUser() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MapActivity.this);
+        alertDialogBuilder.setMessage("GPS is disabled in your device. Would you like to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Goto Settings Page To Enable GPS",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent callGPSSettingIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(callGPSSettingIntent);
+                            }
+                        });
+        alertDialogBuilder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        Intent intent = new Intent(MapActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 
 }
